@@ -5,7 +5,7 @@ var server = http.createServer(function (req, res) {
 
     if (req.url == "/") {
 
-        //Using sync
+        // - Read File Using sync
 
         let homePageData = fs.readFileSync("home.html");
 
@@ -14,7 +14,7 @@ var server = http.createServer(function (req, res) {
         res.end();
 
 
-        // Using Async
+        // - Read File Using Async
 
         // fs.readFile("home.html", function (error, data) {
 
@@ -26,7 +26,7 @@ var server = http.createServer(function (req, res) {
     }
     else if (req.url == "/fs-write") {
 
-        // Using Sync
+        // - Create File Using Sync
 
         let error = fs.writeFileSync('demo.txt', "This is node js Sync");
         if (error) {
@@ -39,7 +39,7 @@ var server = http.createServer(function (req, res) {
             res.end();
         }
 
-        // Using Async
+        // - Create File Using Async
 
         // fs.writeFile('demo.txt', "This is node js Async", function (error) {
         //     if (error) {
@@ -55,7 +55,7 @@ var server = http.createServer(function (req, res) {
     }
     else if (req.url == "/fs-rename") {
 
-        // Using Sync
+        // - Rename File Using Sync
 
         let error = fs.renameSync('demo.txt', "demo_new.txt");
         if (error) {
@@ -69,7 +69,7 @@ var server = http.createServer(function (req, res) {
             res.end();
         }
 
-        // Using Async
+        // - Rename File Using Async
 
         // fs.rename('demo.txt', "demo_new.txt", function (error) {
         //     if (error) {
@@ -111,7 +111,7 @@ var server = http.createServer(function (req, res) {
     }
     else if (req.url == "/fs-delete") {
 
-        // Using Sync
+        // - Delete File Using Sync
 
         // let error = fs.unlink('demo_new.txt');
         // if (error) {
@@ -125,7 +125,7 @@ var server = http.createServer(function (req, res) {
         //     res.end();
         // }
 
-        // Using Async
+        // - Delete File Using Async
 
         fs.unlink('demo_new.txt', function (error) {
             if (error) {
