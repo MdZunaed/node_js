@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const url = require('url');
-const { json } = require('stream/consumers');
 
 let server = http.createServer((req, res) => {
     let parsedUrl = url.parse(req.url, true);
@@ -9,16 +8,20 @@ let server = http.createServer((req, res) => {
 
     let products = fs.readFileSync("./products.json", 'utf-8');
 
+    /// To fetch all the products
     if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id == undefined) {
         res.end(products != undefined ? products : "No Products");
-    } else if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id != undefined) {
+    } 
+
+    /// To fetch specific product with id
+    else if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id != undefined) {
+        // JSON.parse(); convert JSON String into JSON Object
         let productsArray = JSON.parse(products);
         let product = productsArray.find((product) => {
             return product.id == parsedUrl.query.id;
         });
 
         // if(product != undefined){
-
         // res.end(JSON.stringify(product));
         // } else{
         //     res.end(JSON.stringify({
@@ -27,8 +30,37 @@ let server = http.createServer((req, res) => {
         // }
 
         res.end(product != undefined ? JSON.stringify(product) : "Not found");
+        // JSON.stringify(); convert JSON Object into JSON String
 
     }
+
+    /// To add product
+    else if (parsedUrl.pathname == "/products" && req.method == "POST") {
+        let product = "";
+
+        // To read chunk data from Body data
+        req.on("data", (chunk) => {
+            product += chunk;
+        });
+
+        // This event is called at the end of stream is recieved
+        req.on("end", () => {
+            let productsArray = JSON.parse(products);
+            let newProduct = JSON.parse(product);
+            productsArray.push(newProduct);
+            fs.writeFile('./products.json', JSON.stringify(productsArray), (error) => {
+                if (error == null) {
+                    res.end("Product added");
+                } else{
+                    res.end("Error! Product not added");
+                }
+            });
+        });
+
+    }
+
+
+    /// To end response if any endpoint is not found
     else {
         res.end('Not Found');
     }
