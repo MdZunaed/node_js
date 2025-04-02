@@ -59,6 +59,23 @@ let server = http.createServer((req, res) => {
 
     }
 
+    /// To delete product
+    else if(parsedUrl.pathname == "/products" && req.method == "DELETE"){
+        let productsArray = JSON.parse(products);
+        let index = productsArray.findIndex((product)=>{
+            return product.id == url.parse(req.url).query.id;
+        });
+
+        productsArray.splice(index, 1);
+        fs.writeFile('./products.json', JSON.stringify(productsArray), (error)=>{
+            if(error == null){
+                res.end("Product deleted");
+            } else{
+                res.end("Error! Product not deleted");
+            }
+        });
+    }
+
 
     /// To end response if any endpoint is not found
     else {
