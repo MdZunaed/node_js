@@ -11,7 +11,7 @@ let server = http.createServer((req, res) => {
     /// To fetch all the products
     if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id == undefined) {
         res.end(products != undefined ? products : "No Products");
-    } 
+    }
 
     /// To fetch specific product with id
     else if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id != undefined) {
@@ -51,7 +51,7 @@ let server = http.createServer((req, res) => {
             fs.writeFile('./products.json', JSON.stringify(productsArray), (error) => {
                 if (error == null) {
                     res.end("Product added");
-                } else{
+                } else {
                     res.end("Error! Product not added");
                 }
             });
@@ -60,22 +60,51 @@ let server = http.createServer((req, res) => {
     }
 
     /// To delete product
-    else if(parsedUrl.pathname == "/products" && req.method == "DELETE"){
+    else if (parsedUrl.pathname == "/products" && req.method == "DELETE") {
         let productsArray = JSON.parse(products);
-        let index = productsArray.findIndex((product)=>{
-            return product.id == url.parse(req.url).query.id;
+        let index = productsArray.findIndex((product) => {
+            return product.id == parsedUrl.query.id;
         });
 
         productsArray.splice(index, 1);
-        fs.writeFile('./products.json', JSON.stringify(productsArray), (error)=>{
-            if(error == null){
+        fs.writeFile('./products.json', JSON.stringify(productsArray), (error) => {
+            if (error == null) {
                 res.end("Product deleted");
-            } else{
+            } else {
                 res.end("Error! Product not deleted");
             }
         });
     }
 
+    /// To Update a product
+    else if (parsedUrl.pathname == "/products" && req.method == "PUT") {
+        let product = "";
+
+        req.on("data", (chunk) => {
+            product += chunk;
+        });
+        req.on("end", () => {
+            let productObj = JSON.parse(product);
+            let productsArray = JSON.parse(products);
+
+            let index = productsArray.findIndex((product) => {
+                return product.id == parsedUrl.query.id;
+            });
+
+            if (index !== -1) {
+                productsArray[index] = productObj;
+                fs.writeFile("./products.json", JSON.stringify(productsArray), (error) => {
+                    if (error == null) {
+                        res.end("Product updated");
+                    } else {
+                        res.end("Error! Product not updated");
+                    }
+                });
+            } else {
+                res.end("Product not found");
+            }
+        });
+    }
 
     /// To end response if any endpoint is not found
     else {
