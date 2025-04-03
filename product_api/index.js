@@ -8,6 +8,16 @@ let server = http.createServer((req, res) => {
 
     let products = fs.readFileSync("./products.json", 'utf-8');
 
+    /// Handle CORS 
+    res.setHeader("Access-Control-Allow-Origin", "*"); // To allow get data in every ip
+    res.setHeader("Access-Control-Allow-Headers", "*"); // To allow sent Headers
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // To specify methods
+    
+    /// To handle OPTIONS preflight request that comes before POST, PUT, DELETE methods
+    if(req.method == "OPTIONS"){
+        res.end();
+    }
+    
     /// To fetch all the products
     if (parsedUrl.pathname == "/products" && req.method == "GET" && parsedUrl.query.id == undefined) {
         res.end(products != undefined ? products : "No Products");
