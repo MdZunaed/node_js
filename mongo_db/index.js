@@ -46,60 +46,51 @@ const userModel = mongoose.model("users", userSchema);
 let user = {
     name: "Zunayed",
     password: "password",
-    age: 21,
+    age: 17,
     role: "user",
 }
 
+// To Fetch data
+userModel.find().then((data) => {
+    console.log(data);
+    mongoose.disconnect();
+}).catch((error) => console.log(error));
+
+// To sorting data
+// userModel.find().sort({ age: 1 }).then((data) => {
+//     console.log(data);
+//     mongoose.disconnect();
+// }).catch((error) => console.log(error));
+
+// To limit data
+// userModel.find().sort({ age: 1 }).limit(2).then((data) => {
+//     console.log(data);
+//     mongoose.disconnect();
+// }).catch((error) => console.log(error));
+
+
+// To Insert data
 // userModel.create(user).then((data) => {
 //     console.log(data);
 //     console.log("Data Inserted");
 //     mongoose.disconnect();
 // }).catch((error) => console.log(error));
 
-userModel.find().then((data) => {
-    console.log(data);
-    mongoose.disconnect();
-}).catch((error) => console.log(error));
+
+// To Delete item
+// deleteOne() for single data, deleteMany() for multiple data
+// userModel.deleteOne({ age: 21 }).then((data) => {
+//     console.log(data);
+// }).catch((error) => console.log(error));
 
 
+// To Update item
+// updateOne() for single data, updateMany() for multiple data
+// userModel.updateOne(
+//     // To select the data to update
+//     { name: "Jarif" },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// -To show DBs present in system
-// show dbs
-
-// -To create a new DB / Switch DB
-// use db_name
-
-// -To create a new collection
-// db.createCollection(‘name’)
-
-// -To view the collection in DB
-// show collections
-
-// -To create a new document in collection
-// db.collection_name.insertOne( {})
-
-// -To create multiple document in collection
-// db.collection_name.insertMany( [ {}, {} ] )
-
-// -To view document in collection
-// db.collection_name.find()
+//     // To send the data which needed to update
+//     { age: 21 }).then((data) => {
+//         console.log(data);
+//     }).catch((error) => console.log(error));
