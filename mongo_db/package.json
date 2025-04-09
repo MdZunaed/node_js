@@ -1,0 +1,14 @@
+{
+  "name": "mongo_db",
+  "version": "1.0.0",
+  "description": "mongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zunaed",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^8.13.2"
+  }
+}
