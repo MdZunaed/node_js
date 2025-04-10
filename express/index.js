@@ -15,6 +15,19 @@ app.get("/products/:id", (req, res) => {
     });
 });
 
+app.get("/login/:id", middleware, (req, res) => {
+    res.send("Login Succesful");
+});
+
+function middleware(req, res, next) {
+    if (req.params.id < 18) {
+        res.status(401);
+        res.send("Invalid Credential");
+    } else {
+        next();
+    }
+};
+
 app.listen(8000, () => {
     console.log("Server is running");
 });
