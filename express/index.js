@@ -39,6 +39,7 @@ const productSchema = mongoose.Schema(
 
 const productModel = mongoose.model("products", productSchema);
 
+// Get all the products
 app.get("/products", (req, res) => {
     productModel.find().then((products) => {
         res.send({
@@ -50,6 +51,7 @@ app.get("/products", (req, res) => {
     });
 });
 
+// Get a single product
 app.get("/products/:id", (req, res) => {
     productModel.find({ _id: req.params.id }).then((product) => {
         res.send({
@@ -63,10 +65,7 @@ app.get("/products/:id", (req, res) => {
 
 });
 
-app.get("/login/:id", middleware, (req, res) => {
-    res.send("Login Succesful");
-});
-
+// Add new product
 app.post("/products", (req, res) => {
     productModel.create(req.body)
         .then((doc) => {
@@ -77,19 +76,7 @@ app.post("/products", (req, res) => {
         });
 });
 
-app.delete("/products/:id", (req, res) => {
-    productModel.deleteOne({ _id: req.params.id }).then((info) => {
-        res.send({
-            message: "Success",
-            data: info
-        });
-    }).catch((error) => {
-        console.log(error);
-        res.status(400).send({ message: "Something went wrong! Product not deleted" });
-    });
-});
-
-
+// Update a product
 app.put("/products/:id", (req, res) => {
     productModel.updateOne({ _id: req.params.id }, req.body).then((info) => {
         res.send({
@@ -102,6 +89,22 @@ app.put("/products/:id", (req, res) => {
     });
 });
 
+// Delete a product
+app.delete("/products/:id", (req, res) => {
+    productModel.deleteOne({ _id: req.params.id }).then((info) => {
+        res.send({
+            message: "Success",
+            data: info
+        });
+    }).catch((error) => {
+        console.log(error);
+        res.status(400).send({ message: "Something went wrong! Product not deleted" });
+    });
+});
+
+app.get("/login/:id", middleware, (req, res) => {
+    res.send("Login Succesful");
+});
 
 function middleware(req, res, next) {
     if (req.params.id < 18) {
