@@ -48,17 +48,35 @@ app.post("/signup", (req, res) => {
         if (!error) bcrypt.hash(user.password, salt, (error, hashPass) => {
             if (!error) user.password = hashPass;
             userModel.create(user).then((doc) => {
-                    res.send({ message: "Success", data: doc });
-                }).catch((error) => {
-                    console.log(error);
-                    res.status(400).send({ message: "Something went wrong!", error: error });
-                });
+                res.send({ message: "Success", data: doc });
+            }).catch((error) => {
+                console.log(error);
+                res.status(400).send({ message: "Something went wrong!", error: error });
+            });
         });
     });
 });
 
 
+// For Login
 
+app.post("/login", (req, res) => {
+
+    let reqUser = req.body;
+    userModel.findOne({ email: reqUser.email }).then((user) => {
+        if (user == null) {
+            res.status(404).send({ message: "No user found with the email" });
+        } else {
+            bcrypt.compare(reqUser.password, user.password, (error, result) => {
+                if (result == true) {
+                    res.send({ message: "Login Success" });
+                } else {
+                    res.status(400).send({ message: "Wrong Password" });
+                }
+            })
+        }
+    }).catch((error) => console.log(error));
+});
 
 
 /////////// Product CRUD ///////////
