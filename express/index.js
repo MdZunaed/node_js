@@ -1,14 +1,67 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); // To encode-deocde body data
 
 // Database Connection
 mongoose.connect("mongodb://localhost:27017/nodejs").then(() => {
     console.log("Database connected");
 }).catch((error) => console.log(error));
+
+
+/////////// Authentication ///////////
+
+// Schema for Users
+
+const userSchema = mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: [true, "Name is required"],
+        },
+        password: {
+            type: String,
+            required: [true, "Password is required"],
+        },
+        email: {
+            type: String,
+            required: [true, "Email is required"],
+        }
+    },
+    {
+        timestamps: true
+    }
+);
+
+// Model for User
+
+const userModel = mongoose.model("users", userSchema);
+
+// To create account
+
+app.post("/signup", (req, res) => {
+    let user = req.body;
+    bcrypt.genSalt(10, (error, salt) => {
+        if (!error) bcrypt.hash(user.password, salt, (error, hashPass) => {
+            if (!error) user.password = hashPass;
+            userModel.create(user).then((doc) => {
+                    res.send({ message: "Success", data: doc });
+                }).catch((error) => {
+                    console.log(error);
+                    res.status(400).send({ message: "Something went wrong!", error: error });
+                });
+        });
+    });
+});
+
+
+
+
+
+/////////// Product CRUD ///////////
 
 // Schema of Product
 
