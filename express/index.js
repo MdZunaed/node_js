@@ -1,13 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+const dbUrl = "mongodb://localhost:27017/nodejs";
 const app = express();
 
 app.use(express.json()); // To encode-deocde body data
 
 // Database Connection
-mongoose.connect("mongodb://localhost:27017/nodejs").then(() => {
+mongoose.connect(dbUrl).then(() => {
     console.log("Database connected");
 }).catch((error) => console.log(error));
 
@@ -31,9 +33,7 @@ const userSchema = mongoose.Schema(
             required: [true, "Email is required"],
         }
     },
-    {
-        timestamps: true
-    }
+    { timestamps: true }, { versionKey: false }
 );
 
 // Model for User
@@ -69,7 +69,11 @@ app.post("/login", (req, res) => {
         } else {
             bcrypt.compare(reqUser.password, user.password, (error, result) => {
                 if (result == true) {
-                    res.send({ message: "Login Success" });
+
+                    jwt.sign({ email: reqUser.email }, "testKey", (error, token) => {
+                        if (!error)
+                            res.send({ message: "Login Success", token: token, data: reqUser });
+                    });
                 } else {
                     res.status(400).send({ message: "Wrong Password" });
                 }
@@ -77,6 +81,36 @@ app.post("/login", (req, res) => {
         }
     }).catch((error) => console.log(error));
 });
+
+// Endpoint that require token
+
+app.get("/bank-balance", verifyToken, (req, res) => {
+    res.send({
+        message: "Success",
+        data: {
+            bank_account: "1964 8394 9375 9376",
+            balance: 35789
+        }
+    });
+});
+
+function verifyToken(req, res, next) {
+    if (req.headers.authorization == null) {
+        res.status(400).send({ message: "Token is required" });
+        return;
+    }
+    let token = req.headers.authorization.split(" ")[1];
+
+    jwt.verify(token, "testKey", (error, data) => {
+        if (error == null) {
+            next();
+        } else {
+            res.status(401).send({
+                message: "Invalied token! Please Login again"
+            });
+        }
+    });
+}
 
 
 /////////// Product CRUD ///////////
@@ -103,7 +137,7 @@ const productSchema = mongoose.Schema(
             enum: ["Clothing", "Electronics", "Household"]
         },
     },
-    { timestamps: true }
+    { timestamps: true }, { versionKey: false }
 );
 
 // Model for Product
